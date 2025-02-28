@@ -1,130 +1,76 @@
-# This is a sample Python script.
+import sys
+import module as m
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def print_help():
+    print("""
+    Эта программа запускает генераторы с заданным числом шагов.
 
+    Использование:
+        python script.py [номер_генератора] число_шагов
 
-def G1(max_iter):
-    x = 1
-    for _ in range(max_iter):
-        yield x
-        x += 1
+    Если указан только один аргумент (число_шагов), запускаются все генераторы.
+    Если указаны два аргумента (номер_генератора и число_шагов), запускается только указанный генератор.
 
-def G2(max_iter):
-    x = 1
-    for _ in range(max_iter):
-        yield x ** 2
-        x += 1
+    Примеры:
+        python main.py 10          # Запуск всех генераторов с 10 шагами
+        python main.py 3 10        # Запуск только генератора G3 с 10 шагами
+    """)
 
-def G3(max_iter):
-    x = 1
-    for _ in range(max_iter):
-        yield x
-        x *= x + 1
+def run_generator(gen_id, N):
+    match gen_id:
+        case 1:
+            gen = m.G1(N)
+        case 2:
+            gen = m.G2(N)
+        case 3:
+            gen = m.G3(N)
+        case 4:
+            gen = m.G4(N)
+        case 5:
+            gen = m.G5(N)
+        case 6:
+            gen = m.G6(N)
+        case 7:
+            gen = m.G7(N)
+        case 8:
+            gen = m.G8(N)
+        case 9:
+            gen = m.G9(N)
+        case _:
+            print(f"Генератор G{gen_id} не найден.")
+            return
 
-def G4(max_iter):
-    x = 1
-    for _ in range(max_iter):
-        yield 2 ** (x + 1)
-        x += 1
+    print(f"Значения из генератора G{gen_id}:")
+    for value in gen:
+        print(value)
+    print()  # Пустая строка для разделения
 
-def G5(max_iter):
-    x = 1
-    for _ in range(max_iter):
-        yield 2**x + 3 ** (x + 1)
-        x += 1
+def main():
+    args = sys.argv[1:]  # Игнорируем первый аргумент (имя скрипта)
+    # Вывод справки
+    if not args:
+        print_help()
+        return
 
-def G6(max_iter):
-    x = 1
-    x_f = 1
-    for _ in range(max_iter):
-        yield 2**x / x_f
-        x += 1
-        x_f *= x
+    if len(args) == 1:
+        # Запуск всех генераторов
+        try:
+            N = int(args[0])
+            for gen_id in range(1, 10):
+                run_generator(gen_id, N)
+        except ValueError:
+            print("Ошибка: число шагов должно быть целым числом.")
+    elif len(args) == 2:
+        # Запуск конкретного генератора
+        try:
+            gen_id = int(args[0])
+            N = int(args[1])
+            run_generator(gen_id, N)
+        except ValueError:
+            print("Ошибка: номер генератора и число шагов должны быть целыми числами.")
+    else:
+        print("Неверное количество аргументов.")
+        print_help()
 
-def G7(max_iter):
-    x = 1
-    l_val = 0
-    for _ in range(max_iter):
-        l_val += 1 / x
-        yield l_val
-        x += 1
-
-def G8(max_iter):
-    x = 1
-    l_sign = 1
-    l_val = 0
-    for _ in range(max_iter):
-        l_val += 1 / x * l_sign
-        yield l_val
-        l_sign *= -1
-        x += 1
-
-def G9(max_iter):
-    x = 1
-    l_val = 0
-    l_fac = 1
-    for _ in range(max_iter):
-        l_val += 1 / l_fac
-        yield x * l_val
-        x += 1
-        l_fac *= x
-# Метод для проверки генераторов
-def test_generators():
-    # Тест для G1
-    expected_G1 = [1, 2, 3, 4, 5]
-    assert list(G1(5)) == expected_G1, "Тест для G1 не пройден"
-
-    # Тест для G2
-    expected_G2 = [1, 4, 9, 16, 25]
-    assert list(G2(5)) == expected_G2, "Тест для G2 не пройден"
-
-    # Тест для G3
-    expected_G3 = [1, 2, 6, 42, 1806]
-    assert list(G3(5)) == expected_G3, "Тест для G3 не пройден"
-
-    # Тест для G4
-    expected_G4 = [4, 8, 16, 32, 64]
-    assert list(G4(5)) == expected_G4, "Тест для G4 не пройден"
-
-    # Тест для G5
-    expected_G5 = [11, 31, 89, 259, 761]
-    assert list(G5(5)) == expected_G5, "Тест для G5 не пройден"
-
-    # Тест для G6
-    expected_G6 = [2.0, 2.0, 1.3333333333333333, 0.6666666666666666, 0.26666666666666666]
-    result_G6 = list(G6(5))
-    for i in range(len(result_G6)):
-        assert abs(result_G6[i] - expected_G6[i]) < 1e-10, "Тест для G6 не пройден"
-
-    # Тест для G7
-    expected_G7 = [1.0, 1.5, 1.8333333333333333, 2.083333333333333, 2.283333333333333]
-    result_G7 = list(G7(5))
-    for i in range(len(result_G7)):
-        assert abs(result_G7[i] - expected_G7[i]) < 1e-10, "Тест для G7 не пройден"
-
-    # Тест для G8
-    expected_G8 = [1.0, 0.5, 0.8333333333333333, 0.5833333333333333, 0.7833333333333332]
-    result_G8 = list(G8(5))
-    for i in range(len(result_G8)):
-        assert abs(result_G8[i] - expected_G8[i]) < 1e-10, "Тест для G8 не пройден"
-
-    # Тест для G9
-    expected_G9 = [1.0, 3, 5.0, 6.833333333333334, 8.583333333333334]
-    result_G9 = list(G9(5))
-    for i in range(len(result_G9)):
-        assert abs(result_G9[i] - expected_G9[i]) < 1e-10, "Тест для G9 не пройден"
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    test_generators()
-    N = int(input("Введите число шагов: "))
-    generators = [G1(N), G2(N), G3(N), G4(N), G5(N), G6(N), G7(N), G8(N), G9(N)]
-    # Перебираем каждый генератор и выводим его значения
-    for i, gen in enumerate(generators, start=1):
-        print(f"Значения из генератора G{i}:")
-        for value in gen:
-             print(value)
-        print()  # Пустая строка для разделения
-
-
+    main()
